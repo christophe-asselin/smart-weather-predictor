@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.ApplicationModel.Background;
 using BuildAzure.IoT.Adafruit.BME280;
-using System.Diagnostics;
+// using System.Diagnostics;
 using Microsoft.Azure.Devices.Client;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -13,9 +13,9 @@ namespace SmartWeatherPredictor
     {
         // private BackgroundTaskDeferral defferal;
 
-        private string deviceKey = "<deviceKey>";
-        private string _deviceId = "<deviceId>";
-        private string iotHubHostName = "<IoTHubHostname>";
+        private string deviceKey = "9+2uycUmN/b+mgtLCMGvYvMGtqKSDagcyw1+ytOX76k=";
+        private string _deviceId = "MyDevice";
+        private string iotHubHostName = "christophe-asselin-iot-hub.azure-devices.net";
         private DeviceAuthenticationWithRegistrySymmetricKey deviceAuthentication;
         private DeviceClient deviceClient;
 
