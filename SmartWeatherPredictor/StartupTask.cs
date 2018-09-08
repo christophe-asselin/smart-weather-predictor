@@ -1,57 +1,74 @@
 ﻿using System;
 using Windows.ApplicationModel.Background;
-using BuildAzure.IoT.Adafruit.BME280;
-// using System.Diagnostics;
 using Microsoft.Azure.Devices.Client;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
+using System.Diagnostics;
 
 namespace SmartWeatherPredictor
 {
-    public sealed class StartupTask : IBackgroundTask
+    public sealed partial class StartupTask : IBackgroundTask
     {
-        // private BackgroundTaskDeferral defferal;
+        private BackgroundTaskDeferral defferal;
 
-        private string deviceKey = "9+2uycUmN/b+mgtLCMGvYvMGtqKSDagcyw1+ytOX76k=";
-        private string _deviceId = "MyDevice";
-        private string iotHubHostName = "christophe-asselin-iot-hub.azure-devices.net";
         private DeviceAuthenticationWithRegistrySymmetricKey deviceAuthentication;
         private DeviceClient deviceClient;
 
-        private BME280Sensor bme280Sensor;
+        private BuildAzure.IoT.Adafruit.BME280.BME280Sensor bme280Sensor;
+        private float currentTemperature;
+        private float currentHumidity;
+        private float currentPressure;
+
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
-            // defferal = taskInstance.GetDeferral();
+            defferal = taskInstance.GetDeferral();
 
-            deviceAuthentication = new DeviceAuthenticationWithRegistrySymmetricKey(_deviceId, deviceKey);
-            deviceClient = DeviceClient.Create(iotHubHostName, deviceAuthentication, TransportType.Mqtt);
+            deviceAuthentication = new DeviceAuthenticationWithRegistrySymmetricKey(_deviceId, _deviceKey);
+            deviceClient = DeviceClient.Create(_iotHubUri, deviceAuthentication, TransportType.Mqtt);
 
+            bme280Sensor = new BuildAzure.IoT.Adafruit.BME280.BME280Sensor();
             await bme280Sensor.Initialize();
 
             int _messageId = 0;
 
             while (true)
             {
-                var currentTemperature = await bme280Sensor.ReadTemperature();
-                var currentHumidity = await bme280Sensor.ReadHumidity();
-                var currentPressure = await bme280Sensor.ReadPressure();
+                SendTelemetry(_messageId);
+   
+                await Task.Delay(15000);
+            }
+        }
+
+        private async void SendTelemetry(int msgId)
+        {
+            try
+            {
+                currentTemperature = await bme280Sensor.ReadTemperature();
+                currentHumidity = await bme280Sensor.ReadHumidity();
+                currentPressure = (await bme280Sensor.ReadPressure()) / 1000;
+
 
                 var telemetryDataPoint = new
                 {
-                    messageId = _messageId++,
+                    messageId = msgId++,
                     deviceId = _deviceId,
-                    tempereture = currentTemperature,
+                    temperature = currentTemperature,
                     humidity = currentHumidity,
                     pressure = currentPressure
                 };
+
                 string messageString = JsonConvert.SerializeObject(telemetryDataPoint);
                 Message message = new Message(Encoding.ASCII.GetBytes(messageString));
 
-                await deviceClient.SendEventAsync(message);
-                Console.WriteLine("{0} > Sending message: {1}", DateTime.Now, messageString);
+                Debug.WriteLine(messageString);
 
-                await Task.Delay(15000);
+                //await deviceClient.SendEventAsync(message);
+                //Console.WriteLine("{0} > Sending message: {1}", DateTime.Now, messageString);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
         }
 
