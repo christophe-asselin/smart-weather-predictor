@@ -19,6 +19,10 @@ namespace SmartWeatherPredictor
         private float currentHumidity;
         //private float currentPressure;
 
+        /// <summary>
+        /// Run the background task
+        /// </summary>
+        /// <param name="taskInstance"></param>
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
             defferal = taskInstance.GetDeferral();
@@ -37,6 +41,10 @@ namespace SmartWeatherPredictor
             }
         }
 
+        /// <summary>
+        /// Measure weather data and send telemetry to IoT-Hub.
+        /// </summary>
+        /// <param name="msgId"></param>
         private async void sendTelemetry(int msgId)
         {
             try
@@ -70,6 +78,10 @@ namespace SmartWeatherPredictor
             }
         }
 
+        /// <summary>
+        /// Send a message containing telemetry to IoT-Hub in the cloud.
+        /// </summary>
+        /// <param name="message"></param>
         private static async void SendDeviceToCloudMessagesAsync(Message message)
         {
             deviceClient = DeviceClient.Create(_iotHubUri,
