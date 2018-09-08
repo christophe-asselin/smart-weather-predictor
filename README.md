@@ -1,4 +1,4 @@
-# smart-weather-predictor
+# Smart Weather Predictor
 A smart IoT weather predictor which uses Azure services such as machine learning (WORK IN PROGRESS).
 
 The weather prediction feature is not yet implemented. The data from the IoT device is sent to an Azure IoT-Hub and can then be used
