@@ -12,4 +12,4 @@ The website might or might not show data depending if my setup is up and running
 This project uses a Raspberry Pi and a BME280 temperature/humidity/pressure/altitude sensor. The following Frtizing schematics shows how
 to wire up the sensor:
 
-![Alt text](relative/BME280Fritzing.png?raw=true "Fritzing diagram")
+![Alt text](BME280Fritzing.png?raw=true "Fritzing diagram")
